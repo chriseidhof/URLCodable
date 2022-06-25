@@ -56,7 +56,9 @@ fileprivate struct SVC: SingleValueDecodingContainer {
     }
     
     func decode(_ type: String.Type) throws -> String {
-        fatalError("TODO")
+        guard let f = remainder.first?.removingPercentEncoding else { throw MyError() }
+        remainder.removeFirst()
+        return f
     }
     
     func decode(_ type: Double.Type) throws -> Double {
@@ -137,7 +139,7 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
     }
     
     func contains(_ key: Key) -> Bool {
-        fatalError("TODO")
+        allKeys.contains(where: { $0.stringValue == key.stringValue })
     }
     
     func decodeNil(forKey key: Key) throws -> Bool {
@@ -149,8 +151,9 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
     }
     
     func decode(_ type: String.Type, forKey key: Key) throws -> String {
-        guard !remainder.isEmpty else { throw MyError() }
-        return remainder.removeFirst()
+        guard let f = remainder.first?.removingPercentEncoding else { throw MyError() }
+        remainder.removeFirst()
+        return f
     }
     
     func decode(_ type: Double.Type, forKey key: Key) throws -> Double {

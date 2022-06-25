@@ -18,6 +18,75 @@ final class URLEncoder: Encoder {
     }
     
     func singleValueContainer() -> SingleValueEncodingContainer {
+        SVC(root: self)
+    }
+}
+
+fileprivate struct SVC: SingleValueEncodingContainer {
+    let codingPath: [CodingKey] = []
+    unowned var root: URLEncoder
+    
+    mutating func encodeNil() throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: Bool) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: String) throws {
+        root.result.append(value.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
+    }
+    
+    mutating func encode(_ value: Double) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: Float) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: Int) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: Int8) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: Int16) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: Int32) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: Int64) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: UInt) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: UInt8) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: UInt16) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: UInt32) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode(_ value: UInt64) throws {
+        fatalError("TODO")
+    }
+    
+    mutating func encode<T>(_ value: T) throws where T : Encodable {
         fatalError("TODO")
     }
     
@@ -29,7 +98,7 @@ struct KEC<Key: CodingKey>: KeyedEncodingContainerProtocol {
     unowned var root: URLEncoder
     
     mutating func encodeNil(forKey key: Key) throws {
-        fatalError("TODO")
+        root.result.append("")
     }
     
     mutating func encode(_ value: Bool, forKey key: Key) throws {
@@ -37,7 +106,7 @@ struct KEC<Key: CodingKey>: KeyedEncodingContainerProtocol {
     }
     
     mutating func encode(_ value: String, forKey key: Key) throws {
-        root.result.append(value)
+        root.result.append(value.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
     }
     
     mutating func encode(_ value: Double, forKey key: Key) throws {
