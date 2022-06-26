@@ -34,6 +34,14 @@ fileprivate final class URLDecoder: Decoder {
     func singleValueContainer() throws -> SingleValueDecodingContainer {
         SVC(root: self)
     }
+    
+    fileprivate func decodeNil() -> Bool {
+        return root.remainder.isEmpty
+    }
+    
+    func decodeBool() throws -> Bool {
+        try removeFirst { $0 == "true" ? true : ($0 == "false" ? false : nil )}
+    }
 }
 
 struct MyError: Error { } // todo
@@ -48,11 +56,11 @@ fileprivate struct SVC: SingleValueDecodingContainer {
     }
     
     func decodeNil() -> Bool {
-        fatalError("TODO")
+        return root.decodeNil()
     }
     
     func decode(_ type: Bool.Type) throws -> Bool {
-        fatalError("TODO")
+        try root.decodeBool()
     }
     
     func decode(_ type: String.Type) throws -> String {
@@ -155,11 +163,11 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
     }
     
     func decodeNil(forKey key: Key) throws -> Bool {
-        return root.remainder.isEmpty
+        root.decodeNil()
     }
     
     func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
-        try removeFirst { $0 == "true" ? true : ($0 == "false" ? false : nil )}
+        try root.decodeBool()
     }
     
     func decode(_ type: String.Type, forKey key: Key) throws -> String {
