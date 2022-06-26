@@ -132,7 +132,7 @@ fileprivate struct SVC: SingleValueDecodingContainer {
     }
     
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-        fatalError("TODO")
+        try T(from: root)
     }
     
     

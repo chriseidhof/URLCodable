@@ -87,7 +87,8 @@ fileprivate struct SVC: SingleValueEncodingContainer {
     }
     
     mutating func encode<T>(_ value: T) throws where T : Encodable {
-        fatalError("TODO")
+        try value.encode(to: root)
+//        fatalError("TODO")
     }
     
     

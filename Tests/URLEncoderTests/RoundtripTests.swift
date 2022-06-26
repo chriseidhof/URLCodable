@@ -22,7 +22,7 @@ enum Route: Codable, Hashable {
     // default values, nil, combining nil and other parameters
 }
 
-func testRoundtrip(_ lhs: Route, _ rhs: String, file: StaticString = #file, line: UInt = #line) {
+func testRoundtrip(_ lhs: Route?, _ rhs: String, file: StaticString = #file, line: UInt = #line) {
     XCTAssertEqual(try encode(lhs), rhs, file: file, line: line)
     XCTAssertEqual(lhs, try decode(encode(lhs)), file: file, line: line)
 }
