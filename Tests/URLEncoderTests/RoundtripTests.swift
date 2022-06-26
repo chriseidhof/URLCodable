@@ -17,6 +17,7 @@ enum Route: Codable, Hashable {
 //    case test2(String?) // todo what do we do here with nil vs. empty string?
 //    case defaultValue(Int = 5)
     // TODO mirror tests in decoding (nil, UUID, escaping)
+    // todo multiple (optional) values
     // default values, nil, escaping, combining nil and other parameters
 }
 

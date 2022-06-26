@@ -139,11 +139,12 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
     }
     
     func contains(_ key: Key) -> Bool {
-        allKeys.contains(where: { $0.stringValue == key.stringValue })
+        if key.stringValue == "_0" { return true }
+        return allKeys.contains(where: { $0.stringValue == key.stringValue })
     }
     
     func decodeNil(forKey key: Key) throws -> Bool {
-        fatalError("TODO")
+        return root.remainder.isEmpty
     }
     
     func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
