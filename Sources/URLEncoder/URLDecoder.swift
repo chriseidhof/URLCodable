@@ -133,13 +133,24 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
         }
     }
     
+    func removeFirst<A>(_ transform: (String) -> A?) throws -> A {
+        guard let f = remainder.first, let t = transform(f) else {
+            throw MyError()
+        }
+        remainder.removeFirst()
+        return t
+    }
+    
     var remainder: [String] {
         get { root.remainder }
         nonmutating set { root.remainder = newValue }
     }
     
     func contains(_ key: Key) -> Bool {
-        if key.stringValue == "_0" { return true }
+        if key.stringValue.hasPrefix("_") {
+            let remainder = key.stringValue.dropFirst()
+            if Int(remainder) != nil { return true }
+        }
         return allKeys.contains(where: { $0.stringValue == key.stringValue })
     }
     
@@ -148,13 +159,11 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
     }
     
     func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
-        fatalError("TODO")
+        try removeFirst { $0 == "true" ? true : ($0 == "false" ? false : nil )}
     }
     
     func decode(_ type: String.Type, forKey key: Key) throws -> String {
-        guard let f = remainder.first?.removingPercentEncoding else { throw MyError() }
-        remainder.removeFirst()
-        return f
+        try removeFirst { $0.removingPercentEncoding }
     }
     
     func decode(_ type: Double.Type, forKey key: Key) throws -> Double {
@@ -166,11 +175,7 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
     }
     
     mutating func decode(_ type: Int.Type, forKey key: Key) throws -> Int {
-        guard !remainder.isEmpty, let i = Int(remainder[0]) else {
-            throw MyError()
-        }
-        remainder.removeFirst()
-        return i
+        try removeFirst { Int($0) }
     }
     
     func decode(_ type: Int8.Type, forKey key: Key) throws -> Int8 {

@@ -102,7 +102,7 @@ struct KEC<Key: CodingKey>: KeyedEncodingContainerProtocol {
     }
     
     mutating func encode(_ value: Bool, forKey key: Key) throws {
-        fatalError("TODO")
+        root.result.append("\(value ? "true" : "false")")
     }
     
     mutating func encode(_ value: String, forKey key: Key) throws {
