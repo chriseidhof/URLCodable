@@ -36,11 +36,27 @@ fileprivate final class URLDecoder: Decoder {
     }
     
     fileprivate func decodeNil() -> Bool {
-        return root.remainder.isEmpty
+        return remainder.isEmpty
+    }
+    
+    func removeFirst<A>(_ transform: (String) -> A?) throws -> A {
+        guard let f = remainder.first, let t = transform(f) else {
+            throw MyError()
+        }
+        remainder.removeFirst()
+        return t
     }
     
     func decodeBool() throws -> Bool {
         try removeFirst { $0 == "true" ? true : ($0 == "false" ? false : nil )}
+    }
+    
+    func decodeInt() throws -> Int {
+        try removeFirst { Int($0) }
+    }
+
+    func decodeString() throws -> String {
+        try removeFirst { $0.removingPercentEncoding }
     }
 }
 
@@ -64,9 +80,7 @@ fileprivate struct SVC: SingleValueDecodingContainer {
     }
     
     func decode(_ type: String.Type) throws -> String {
-        guard let f = remainder.first?.removingPercentEncoding else { throw MyError() }
-        remainder.removeFirst()
-        return f
+        try root.decodeString()
     }
     
     func decode(_ type: Double.Type) throws -> Double {
@@ -78,11 +92,7 @@ fileprivate struct SVC: SingleValueDecodingContainer {
     }
     
     func decode(_ type: Int.Type) throws -> Int {
-        guard !remainder.isEmpty, let i = Int(remainder[0]) else {
-            throw MyError()
-        }
-        remainder.removeFirst()
-        return i
+        try root.decodeInt()
     }
     
     func decode(_ type: Int8.Type) throws -> Int8 {
@@ -141,13 +151,6 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
         }
     }
     
-    func removeFirst<A>(_ transform: (String) -> A?) throws -> A {
-        guard let f = remainder.first, let t = transform(f) else {
-            throw MyError()
-        }
-        remainder.removeFirst()
-        return t
-    }
     
     var remainder: [String] {
         get { root.remainder }
@@ -171,7 +174,7 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
     }
     
     func decode(_ type: String.Type, forKey key: Key) throws -> String {
-        try removeFirst { $0.removingPercentEncoding }
+        try root.decodeString()
     }
     
     func decode(_ type: Double.Type, forKey key: Key) throws -> Double {
@@ -183,7 +186,7 @@ fileprivate struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
     }
     
     mutating func decode(_ type: Int.Type, forKey key: Key) throws -> Int {
-        try removeFirst { Int($0) }
+        try root.decodeInt()
     }
     
     func decode(_ type: Int8.Type, forKey key: Key) throws -> Int8 {
